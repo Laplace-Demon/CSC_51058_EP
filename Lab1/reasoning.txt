@@ -1,0 +1,255 @@
+# Finding letter 'e'
+
+We first compute the frequency of each letter in the ciphertext, the tool shows the three
+most frequent letters are 'O', 'G', and 'B', appearing 59, 55, and 38 times respctively.
+Since 'e' is the most frequent letter in average English text, we first make the guess that
+'e' corresponds to 'O' in the ciphertext.
+
+    Cipher: ABCDEFGHIJKLMNOPQRSTUVWXYZ
+    Clear : --------------e-----------
+
+
+# Finding pair 'th'
+
+'th' is one of the most frequent bigrams in average English text, whereas the reverse 'ht'
+seldom appears. By looking at the bigram frequencies in the cipher text, we find the most
+frequent bigrams are 'GP' for 19 times, 'PO' for 14 times, and 'TC' for 10 times. Their
+reverse 'PG', 'OP', and 'CT' appear 4, 1, and 0 time respectively. Since we have assumed 'O'
+to be 'e', the bigram 'GP' is a good candidate for 'th'.
+
+    Cipher: ABCDEFGHIJKLMNOPQRSTUVWXYZ
+    Clear : ------t-------eh----------
+
+
+# Finding letter 'a'
+
+We then try to find the letter 'a' because it's a vowel and it may appear in the word 'that',
+where all other letters have been fixed. By searching for the pattern 'th-t' in the partial
+decryption, we find two occurrences:
+
+    GPCGGPOONO
+    th-tthee-e
+    
+    OCGPZGICR (end)
+    e-th-t---
+
+The context of the first case being more complete, 'C' is a good candidate to 'a' due to the
+appearance of the combination 'that the'. But 'Z' may also be 'a'. Let's look at the result of
+Sukhotin's algorithm for further evidence:
+
+    Putative vowels: O G B C Z E
+       O   G   B   C   Z   E
+    O  5   2   1   3   1   2
+    G  4   4   4   1   5   0
+    B  0   1   0   0   0   0
+    C  0   8   0   0   0   1
+    Z  0   7   2   0   0   0
+    E  0   1   1   3   1   0
+    --------------------------
+       e   a   o   i   u   y  
+    e  1   3   2   1   0   0
+    a  0   0   0   0   0   1
+    o  0   0   1   0   4   0
+    i  1   0   3   0   0   0
+    u  0   0   0   0   0   0
+    y  0   0   1   0   0   0
+
+Again, 'C' and 'Z' are all suggested to be vowels. Moreover, we observe that in average English
+text the bigram 'at' appears more frequently than 'ta' by 3 times roughly. Since we have fixed
+'G' to be 't', we refer again to the bigram analysis to find:
+
+    'CG' appears 8 times and 'GC' appears 1 time
+    'ZG' appears 7 times and 'GZ' appears 5 times
+
+Here, the results show 'C' is more likely to be 'a'.
+
+    Cipher: ABCDEFGHIJKLMNOPQRSTUVWXYZ
+    Clear : --a---t-------eh----------
+
+
+# Finding word patterns
+
+## Letters 'b' and 'n'
+
+We try to find partially complete word or phrase, near the end of the cipher text we have:
+
+    MOROCGPZGICR
+    -e-eath-t-a-
+
+'-e-eath' makes us think of the word 'beneath', so we suppose 'M' and 'R' to be 'b' and 'n'
+and see what happends.
+
+    Cipher: ABCDEFGHIJKLMNOPQRSTUVWXYZ
+    Clear : --a---t-----b-eh-n--------
+
+## Letter 's'
+
+We also find the pattern:
+
+    CGGPOMOSG
+    atthebe-t
+
+We see the phrase 'atthebest' so we suppose 'S' to be 's'. 
+
+    Cipher: ABCDEFGHIJKLMNOPQRSTUVWXYZ
+    Clear : --a---t-----b-eh-ns-------
+
+## Letters 'i' and 'w'
+
+Moreover, the beginning of the ciphertext gives:
+
+    (beginning) ZGTCS
+                -t-as
+
+We suppose 'Z' to be 'i' and 'T' to be 'w' to produce the beginning 'itwas'.
+
+    Cipher: ABCDEFGHIJKLMNOPQRSTUVWXYZ
+    Clear : --a---t-----b-eh-nsw-----i
+
+## Letter 'k'
+
+We have also found:
+
+    PCGOTOOKGPO
+    hatewee-the
+
+The preceding 'hate' and the following 'the' suggest 'wee-' to be a word by itself. Though the
+signification of 'hate week' is not clear to us, we suppose 'K' to be 'k'.
+
+    Cipher: ABCDEFGHIJKLMNOPQRSTUVWXYZ
+    Clear : --a---t---k-b-eh-nsw-----i
+
+## Vowels 'o' and 'u'
+
+In order to find the remaining vowels, we recall the result of Sukhotin's algorithm:
+
+    Putative vowels: O G B C Z E
+       O   G   B   C   Z   E
+    O  5   2   1   3   1   2
+    G  4   4   4   1   5   0
+    B  0   1   0   0   0   0
+    C  0   8   0   0   0   1
+    Z  0   7   2   0   0   0
+    E  0   1   1   3   1   0
+    --------------------------
+       e   a   o   i   u   y  
+    e  1   3   2   1   0   0
+    a  0   0   0   0   0   1
+    o  0   0   1   0   4   0
+    i  1   0   3   0   0   0
+    u  0   0   0   0   0   0
+    y  0   0   1   0   0   0
+
+This suggests 'B' and 'E' to be in the set of remaining vowels 'o', 'u' and 'y'. And we find in
+the ciphertext:
+
+    CMBQGTPOR
+    ab--twhen
+
+Given the complete word 'when' and our guess about 'B', the pattern 'ab--t' is probably 'about',
+with 'B' mapping to 'o' and 'Q' to 'u'.
+
+    Cipher: ABCDEFGHIJKLMNOPQRSTUVWXYZ
+    Clear : -oa---t---k-b-ehunsw-----i
+
+
+# Remaining letters
+
+Upon seeing the partially completed sentence:
+
+    MZFMIBGPOIZSTCGWPZRFNBQ
+    bi-b-othe-iswat-hin--ou
+
+Intuition gives 'bigbrotheriswatchingyou', so we suppose 'F', 'I', 'W', 'N' to be respectively 'g',
+'r', 'c', 'y'. This completes a lot the key.
+
+    Cipher: ABCDEFGHIJKLMNOPQRSTUVWXYZ
+    Clear : -oa--gt-r-k-byehunsw--c--i
+
+The partially decrypted text:
+
+    ZGTCSRBQSOGINZRFGPOUZYGOJORCGGPOMOSGBYGZHOSZGTCSSO
+    itwasnousetryingthe-i-te-enatthebesto-ti-esitwasse
+    UEBHTBIKZRFCRECGLIOSORGGPOOUOWGIZWWQIIORGTCSWQGBYY
+    --o-workingan-at-resentthee-ectriccurrentwascuto--
+    EQIZRFECNUZFPGPBQISZGTCSLCIGBYGPOOWBRBHNEIZJOZRLIO
+    -uring-ay-ighthoursitwas-arto-theecono-y-ri-ein-re
+    LCICGZBRYBIPCGOTOOKGPOYUCGTCSSOJORYUZFPGSQLCRETZRS
+    -aration-orhateweekthe--atwasse-en--ightsu-an-wins
+    GBRTPBTCSGPZIGNRZROCREPCECJCIZWBSOQUWOICMBJOPZSIZF
+    tonwhowasthirtyninean-ha-a-aricoseu-cerabo-ehisrig
+    PGCRKUOTORGSUBTUNIOSGZRFSOJOICUGZHOSBRGPOTCNBROCWP
+    htank-ewents-ow-yrestingse-era-ti-esonthewayoneach
+    UCREZRFBLLBSZGOGPOUZYGSPCYGGPOLBSGOITZGPGPOORBIHBQ
+    -an-ingo--ositethe-i-tsha-tthe-osterwiththeenor-ou
+    SYCWOFCXOEYIBHGPOTCUUZGTCSBROBYGPBSOLZWGQIOSTPZWPC
+    s-acega-e--ro-thewa--itwasoneo-those-ictureswhicha
+    IOSBWBRGIZJOEGPCGGPOONOSYBUUBTNBQCMBQGTPORNBQHBJOM
+    resocontri-e-thattheeyes-o--owyouaboutwhenyou-o-eb
+    ZFMIBGPOIZSTCGWPZRFNBQGPOWCLGZBRMOROCGPZGICR
+    igbrotheriswatchingyoutheca-tionbeneathitran
+
+The remaining tasks are much easier:
+
+    GPBSOLZWGQIOS
+    those-ictures
+    
+indicates 'L' to be 'p' due to the word 'pictures'.
+
+
+    TPZWPCIOSBWBRGIZJOEGPCG
+    whicharesocontri-e-that
+    
+indicates 'J' and 'E' to be 'v' and 'd' due to the word 'contrived'.
+
+
+    GZHOSZGTCS
+    ti-esitwas
+
+and
+
+    TPORNBQHBJO
+    whenyou-ove
+    
+toghther indicates 'H' to be 'm' due to the words 'times' and 'move'.
+
+
+    SOJOICUGZHOS
+    severa-times
+
+indicates 'U' to be 'l' due to the word 'several'.
+
+
+    GINZRFGPOUZYG
+    tryingtheli-t
+
+and
+
+    YBUUBTNBQ
+    -ollowyou
+
+toghther indicates 'Y' to be 'f' due to the words 'lift' and 'follow'.
+
+
+    YCWOFCXOEYIBHGPOTCUU
+    facega-edfromthewall
+
+indicates 'X' to be 'z' due to the word 'gazed'.
+
+Finally, we have the key:
+
+    Cipher: ABCDEFGHIJKLMNOPQRSTUVWXYZ
+    Clear : -oa-dgtmrvkpbyehunswl-c-fi
+
+along with the plaintext:
+
+    itwasnousetryingtheliftevenatthebestoftimesitwasse
+    ldomworkingandatpresenttheelectriccurrentwascutoff
+    duringdaylighthoursitwaspartoftheeconomydriveinpre
+    parationforhateweektheflatwassevenflightsupandwins
+    tonwhowasthirtynineandhadavaricoseulcerabovehisrig
+    htanklewentslowlyrestingseveraltimesonthewayoneach
+    landingoppositetheliftshafttheposterwiththeenormou
+    sfacegazedfromthewallitwasoneofthosepictureswhicha
+    resocontrivedthattheeyesfollowyouaboutwhenyoumoveb
+    igbrotheriswatchingyouthecaptionbeneathitran
