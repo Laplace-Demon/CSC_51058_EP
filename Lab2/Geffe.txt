@@ -1,0 +1,101 @@
+Question1:
+
+At each clock cycle, we note x1, x2 and x3 random variables representing the outputs of the three
+LFSRs. We note z the random variable representing the Geffe generator's output. We suppose x1, x2
+and x3 are independent and identically distributed, they follow a Bernoulli distribution of parameter
+1/2. That is each bit has an equal chance to be true or false. These random variables take value
+from the set {0, 1} and we take the convention that 0 represents false and 1 represents true. We do
+not distinguish between 0 and false, 0 and true.
+
+We have the relation: z = x1.x2 ⊕ x2.x3 ⊕ x3, where '.' stands for bit and operator and '⊕' stands
+for bit exclusive or operator. Thus, we have:
+
+    Prob(z = x1) = Prob(x1.x2 ⊕ x2.x3 ⊕ x3 = x1)
+                 = Prob(x1.x2 ⊕ x2.x3 ⊕ x3 ⊕ x3 = x1 ⊕ x3)
+                 = Prob(x1.x2 ⊕ x2.x3 = x1 ⊕ x3)
+
+We know that bit and is commutative and distributes over bit exclusive or, we have:
+
+    Prob(z = x1) = Prob(x1.x2 ⊕ x3.x2 = x1 ⊕ x3)
+                 = Prob((x1 ⊕ x3).x2 = x1 ⊕ x3)
+                 = Prob(x2 = true) * Prob((x1 ⊕ x3).x2 = x1 ⊕ x3 | x2 = true)
+                    + Prob(x2 = false) * Prob((x1 ⊕ x3).x2 = x1 ⊕ x3 | x2 = false)
+                 = 1/2 * Prob((x1 ⊕ x3).true = x1 ⊕ x3) + 1/2 * Prob((x1 ⊕ x3).false = x1 ⊕ x3)
+                 = 1/2 + 1/2 * Prob(false = x1 ⊕ x3)
+
+We have:
+
+    Prob(false = x1 ⊕ x3) = Prob(x1 = true, x3 = true) * Prob(false = x1 ⊕ x3 | x1 = true, x3 = true)
+                                + Prob(x1 = true, x3 = false) * Prob(false = x1 ⊕ x3 | x1 = true, x3 = false)
+                                + Prob(x1 = false, x3 = true) * Prob(false = x1 ⊕ x3 | x1 = false, x3 = true)
+                                + Prob(x1 = false, x3 = false) * Prob(false = x1 ⊕ x3 | x1 = false, x3 = false)
+                          = Prob(x1 = true) * Prob(x3 = true) + Prob(x1 = false) * Prob(x3 = false)
+                          = 1/2 * 1/2 + 1/2 * 1/2
+                          = 1/2
+
+Consequently, we have:
+
+    Prob(z = x1) = 1/2 + 1/2 * 1/2 = 3/4
+
+Similarly, we have:
+
+    Prob(z = x3) = 3/4
+
+Finally:
+
+    Prob(z = x1) = Prob(z = x3) = 3/4
+
+
+Question2:
+
+A brute force attack on Geffe's generator consists in enumerating all the possibilities of the
+combination of three LFSRs' initial values, generating and comparing the output stream with the
+known output stream. We suppose the output stream has length n. We suppose all the lengths are
+given in bits.
+
+Firstly, the initial values of the three LFSRs have respectively 2 ^ l1, 2 ^ l2 and 2 ^ l3
+possibilities. Consequently, there are in total 2 ^ (l1 + l2 + l3) possibilities of initial values.
+
+We suppose incrementing the initial values during search and generating the next bit in the stream
+takes constant time. For each combination of initial values, the algorithm generates and compares
+n bits.
+
+The overall complexity can thus be given as: O(n * 2 ^ (l1 + l2 + l3)).
+
+
+Question3:
+
+In the above attack, we perform brute force attacks on the first, the third and finally the second LFSR
+separately. The complexities are respectively O(n * 2 ^ l1), O(n * 2 ^ l3) and O(n * 2 ^ l2).
+
+The overall complexity can thus be given as: O(n * (2 ^ l1 + 2 ^ l2 + 2 ^ l3)).
+
+
+Question4:
+
+We suppose solving a linear system of n variables has time complexity O(n ^ 3) (using Gaussian elimination).
+
+We observe that if x1 = 1 and x3 = 0, then z = x2. Following our assumptions in Question1, we have:
+
+    Prob(x1 = 1, x3 = 0) = Prob(x1 = 1) * Prob(x3 = 0) = 1/2 * 1/2 = 1/4
+
+The mathematical expectation of known bits in the output stream of the second LFSR is n/4. Together with the
+l2 bits of initial values, we have l2 + 3n/4 variables. And we have n linear equations in the linear system.
+
+If l2 + 3n/4 > n, we proceed by guessing the value of l2 - n/4 bits and solve the linear system. Otherwise,
+we can solve the linear system directly. We can split into two cases:
+
+    When l2 > n/4, the average complexity is: O(n * (2 ^ l1 + 2 ^ l3) + n ^ 3 * 2 ^ (l2 - n/4)).
+    
+    When l2 <= n/4, the average complexity is: O(n * (2 ^ l1 + 2 ^ l3) + n ^ 3).
+
+
+Question5:
+
+When the length of the three LFSRs is about 30 bits, the state space that a brute force attack should
+explore is of size 2 ^ 90, which is computationally impractical. However, our attack only needs to explore
+several state spaces of size 2 ^ 30, which can be done in a reasonable amount of time.
+
+Besides, since C language provides integer type of 32 bits, we can encode the initial value in such a data
+type during search, incrementing the initial value by one would amount to incrementing the integer by one,
+which is more convenient and faster than our general-purpose implementation of increment.
